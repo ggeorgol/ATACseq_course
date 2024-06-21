@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -47,12 +81,14 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#setup-directory" id="toc-setup-directory" class="nav-link active" data-scroll-target="#setup-directory">Setup directory</a>
   <ul class="collapse">
-  <li><a href="#remote-coding" id="toc-remote-coding" class="nav-link" data-scroll-target="#remote-coding">Remote coding</a>
+  <li><a href="#login-to-auth-cluster-remote-coding-only" id="toc-login-to-auth-cluster-remote-coding-only" class="nav-link" data-scroll-target="#login-to-auth-cluster-remote-coding-only">Login to AUTH cluster (Remote coding only)</a>
   <ul class="collapse">
-  <li><a href="#windows-users" id="toc-windows-users" class="nav-link" data-scroll-target="#windows-users">Windows users</a></li>
-  <li><a href="#unix-linuxmacos-users" id="toc-unix-linuxmacos-users" class="nav-link" data-scroll-target="#unix-linuxmacos-users">Unix (Linux/MacOS) users</a></li>
+  <li><a href="#install-vscode-or-mobaxterm-windows-users-only" id="toc-install-vscode-or-mobaxterm-windows-users-only" class="nav-link" data-scroll-target="#install-vscode-or-mobaxterm-windows-users-only">Install VSCode or MobaXTerm (Windows Users Only)</a></li>
+  <li><a href="#connect-to-auth-cluster" id="toc-connect-to-auth-cluster" class="nav-link" data-scroll-target="#connect-to-auth-cluster">Connect to AUTH cluster</a></li>
   </ul></li>
-  <li><a href="#local-coding" id="toc-local-coding" class="nav-link" data-scroll-target="#local-coding">Local coding</a></li>
+  <li><a href="#download-repo" id="toc-download-repo" class="nav-link" data-scroll-target="#download-repo">Download repo</a></li>
+  <li><a href="#download-data" id="toc-download-data" class="nav-link" data-scroll-target="#download-data">Download data</a></li>
+  <li><a href="#create-conda-environment" id="toc-create-conda-environment" class="nav-link" data-scroll-target="#create-conda-environment">Create conda environment</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -90,23 +126,33 @@ ul.task-list li input[type="checkbox"] {
 </ol>
 <section id="setup-directory" class="level1">
 <h1>Setup directory</h1>
-<p>If you plan to work locally, skip to this <a href="#local-coding">section</a></p>
-<section id="remote-coding" class="level2">
-<h2 class="anchored" data-anchor-id="remote-coding">Remote coding</h2>
-<p>Before setting up, there are some necessary steps specific for remote coding which are specific to Windows users. If you are a Linux os MacOS user skip to <a href="#unix-%28linuxmacos%29-users">section</a></p>
-<section id="windows-users" class="level3">
-<h3 class="anchored" data-anchor-id="windows-users">Windows users</h3>
-<section id="install-vscode-or-mobaxterm" class="level4">
-<h4 class="anchored" data-anchor-id="install-vscode-or-mobaxterm">Install VSCode or MobaXTerm</h4>
-<p>In order to use SSH (remote host access) to the AUTH</p>
+<section id="login-to-auth-cluster-remote-coding-only" class="level2">
+<h2 class="anchored" data-anchor-id="login-to-auth-cluster-remote-coding-only">Login to AUTH cluster (Remote coding only)</h2>
+<p>Before setting up, there are some necessary steps specific for remote coding which are specific to Windows users. If you are a Linux os MacOS user skip to <a href="#unix-linuxmacos-users">section</a></p>
+<section id="install-vscode-or-mobaxterm-windows-users-only" class="level3">
+<h3 class="anchored" data-anchor-id="install-vscode-or-mobaxterm-windows-users-only">Install VSCode or MobaXTerm (Windows Users Only)</h3>
+<p>In order to use SSH (remote host access) to the AUTH computer cluster you will either need to have Windows Subprocesses for Linux <a href="https://learn.microsoft.com/en-us/windows/wsl/install">(WSL)</a> installed and enabled or use and IDE such as <a href="https://code.visualstudio.com/">VSCode</a> or <a href="https://mobaxterm.mobatek.net/">MobaXTerm</a></p>
+</section>
+<section id="connect-to-auth-cluster" class="level3">
+<h3 class="anchored" data-anchor-id="connect-to-auth-cluster">Connect to AUTH cluster</h3>
+<p>If you are not logged in an AUTH network (e.g.&nbsp;working from home), make sure you have eduVPN enabled. More info <a href="https://it.auth.gr/manuals/eduvpn/">here</a></p>
+<p>Then open a terminal window or your IDE and type the following:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="pp">[</span><span class="ss">username</span><span class="pp">]</span>@aristotle.it.auth.gr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
-<section id="unix-linuxmacos-users" class="level3">
-<h3 class="anchored" data-anchor-id="unix-linuxmacos-users">Unix (Linux/MacOS) users</h3>
+<section id="download-repo" class="level2">
+<h2 class="anchored" data-anchor-id="download-repo">Download repo</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/ggeorgol/ATACseq_course</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ATACseq_course</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
+<section id="download-data" class="level2">
+<h2 class="anchored" data-anchor-id="download-data">Download data</h2>
+<p>In this course we are going to work with ATAC-seq data generated by the <a href="https://www.encodeproject.org/matrix/?type=Experiment&amp;control_type!=*&amp;status=released&amp;perturbed=false&amp;assay_title=ATAC-seq">ENCODE project</a>. We will work with naïve and activated T-cells from a female adult with the following accession numbers: <a href="https://www.encodeproject.org/experiments/ENCSR977LVI/">ENCSR977LVI</a>, and <a href="https://www.encodeproject.org/experiments/ENCSR558ZSN/">ENCSR558ZSN</a></p>
 </section>
-<section id="local-coding" class="level2">
-<h2 class="anchored" data-anchor-id="local-coding">Local coding</h2>
+<section id="create-conda-environment" class="level2">
+<h2 class="anchored" data-anchor-id="create-conda-environment">Create conda environment</h2>
+<p>There is a set of tools necessary to analyze ATAC-seq data and not only</p>
 </section>
 </section>
 
