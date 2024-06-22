@@ -1,7 +1,7 @@
 ---
-title: "01 Pre-class setup"
+title: "00 Pre-class setup"
 author: Grigorios Georgolopoulos
-date: 2024-06-21
+date: last-modified
 theme: yeti
 number-sections: true
 format:

@@ -1,0 +1,31 @@
+---
+title: "01 ATAC-seq method overview"
+author: Grigorios Georgolopoulos
+date: last-modified
+theme: yeti
+number-sections: true
+format:
+  html:
+    code-fold: true
+    toc: true
+    toc-location: left
+editor: visual
+engine: knitr
+---
+
+# ATAC-seq
+
+ATAC-seq (Assay for Transposase-Accessible Chromatin with high-throughput sequencing) is a chromatin accessibility method for detecting active (accessible) chromatin regions and therefore DNA regulatory elements genome-wide. It utilizes a hyperactive Tn5 transposase to insert sequencing adapters (tagmentation) into open chromatin regions (Figure 1). The tagged DNA fragments are then purified, PCR amplified and sequenced resulting reads that cluster within these regions of increased accessibility. The more reads in a region, the more accessible the chromatin is.
+
+ATAC-seq quickly gained popularity due to the protocl simplicty as it requires no sonication and phenol-chlorofor purification like FAIRE-seq, or enzymatic digestion like MNase-seq and DNase I-seq. In addition, ATACseq experiments typically require smaller starting material (~50,000 cells) in comparison to DNase I where typically millions of cells are required. In contrast, ATAC-seq yields lower resolution chromatin accessibility datasets compared to DNase I-seq and is limited by the Tn5 bias where the transposase can show insertion preference into certain DNA sequences
+
+![ATACseq method overview from Grandi et al., 2022](assets/ATACseq_Fig1.png){.lightbox}
+
+Some popular applications of ATAC-seq:
+1. Identify open chromatin regions
+2. Perform differential accessibility analysis
+3. Identify transcription factor binding sites (footprinting)
+4. Infer gene activity based on gene body and upstream accessibility
+
+# Analysis workflow
+

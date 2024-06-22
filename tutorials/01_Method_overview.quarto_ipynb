@@ -1,0 +1,38 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"01 ATAC-seq method overview\"\n",
+        "author: Grigorios Georgolopoulos\n",
+        "date: 2024-06-21\n",
+        "theme: yeti\n",
+        "number-sections: true\n",
+        "format:\n",
+        "  html:\n",
+        "    code-fold: true\n",
+        "    toc: true\n",
+        "    toc-location: left\n",
+        "editor: visual\n",
+        "---\n",
+        "\n",
+        "```{bash}\n",
+        "echo $(date)\n",
+        "```"
+      ],
+      "id": "d9433ae6"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/Users/ggeorgol/Library/Python/3.9/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
