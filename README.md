@@ -2,7 +2,7 @@
 
 <b>Program website</b>: https://websites.auth.gr/appbio/<br>
 <b>Instructor</b>: Grigorios Georgolopoulos, PhD<br>
-<b>For questions contact</b>: georgolog@gmail.com
+<b>For help contact</b>: georgolog@gmail.com
 
 
 <h2>Getting started</h2>
