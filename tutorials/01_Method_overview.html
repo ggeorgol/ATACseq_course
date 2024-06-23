@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Grigorios Georgolopoulos">
-<meta name="dcterms.date" content="2024-06-22">
+<meta name="dcterms.date" content="2024-06-23">
 
 <title>01 ATAC-seq method overview</title>
 <style>
@@ -51,6 +51,7 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#atac-seq" id="toc-atac-seq" class="nav-link active" data-scroll-target="#atac-seq"><span class="header-section-number">1</span> ATAC-seq</a></li>
+  <li><a href="#analysis-workflow" id="toc-analysis-workflow" class="nav-link" data-scroll-target="#analysis-workflow"><span class="header-section-number">2</span> Analysis workflow</a></li>
   </ul>
 </nav>
 </div>
@@ -77,7 +78,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 22, 2024</p>
+      <p class="date">June 23, 2024</p>
     </div>
   </div>
   
@@ -100,6 +101,53 @@ ul.task-list li input[type="checkbox"] {
 </figure>
 </div>
 <p>Some popular applications of ATAC-seq: 1. Identify open chromatin regions 2. Perform differential accessibility analysis 3. Identify transcription factor binding sites (footprinting) 4. Infer gene activity based on gene body and upstream accessibility</p>
+</section>
+<section id="analysis-workflow" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Analysis workflow</h1>
+<ul>
+<li>FASTQ QC
+<ul>
+<li>Sequnce quality</li>
+<li>GC content</li>
+<li>Sequence duplication rate</li>
+<li>Read-length distribution</li>
+<li>K-mer enrichment</li>
+<li>Adapter contamination</li>
+<li>Adapter and low Q bases trimming</li>
+</ul></li>
+</ul>
+<p>Recommended tools: <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/">FASTQC</a>, <a href="https://github.com/OpenGene/fastp">fastp</a>, <a href="https://cme.h-its.org/exelixis/web/software/pear/doc.html">Pear</a>, <a href="https://cutadapt.readthedocs.io/en/stable/">cutadapt</a>, <a href="http://www.usadellab.org/cms/?page=trimmomatic">trimmomatic</a></p>
+<ul>
+<li>Alignment &amp; QC
+<ul>
+<li>Mapping (BWA/bowtie2)</li>
+<li>Filtering mapped reads (MAPQ &gt;= 30)</li>
+<li>Check alignment rate</li>
+<li>Count % dupicate reads and filter out</li>
+<li>Obtain fragments</li>
+<li>Check insert sizes</li>
+<li>Generate coverage tracks (bigWigs)</li>
+<li>Check TSS enrichment</li>
+</ul></li>
+</ul>
+<p>Recommended tools: <a href="https://bio-bwa.sourceforge.net/bwa.shtml">BWA-MEM</a>, <a href="https://bowtie-bio.sourceforge.net/bowtie2/index.shtml">bowtie2</a>, <a href="http://www.htslib.org/doc/samtools.html">samtools</a>, <a href="https://broadinstitute.github.io/picard/">picard</a>, <a href="https://deeptools.readthedocs.io/en/develop/">deepTools</a></p>
+<ul>
+<li>Peak calling
+<ul>
+<li>Call peaks (MACS2/3)</li>
+<li>Annotate peaks</li>
+<li>Motif enrichment</li>
+</ul></li>
+</ul>
+<p>Recommended tools: <a href="https://github.com/macs3-project/MACS">MACS</a>, <a href="http://homer.ucsd.edu/homer/">HOMER</a>, <a href="http://great.stanford.edu/public/html/">GREAT</a>, <a href="https://meme-suite.org/meme/">MEME</a></p>
+<ul>
+<li>TF Footprinting
+<ul>
+<li>De novo footprint detection</li>
+<li>Motif-centring footprinting</li>
+</ul></li>
+</ul>
+<p>Recommended tools: <a href="https://github.com/loosolab/TOBIAS">TOBIAS</a>, <a href="http://greenleaflab.github.io/chromVAR/">ChromVar</a>, <a href="https://reg-gen.readthedocs.io/en/latest/hint/introduction.html">HINT-ATAC</a></p>
 </section>
 
 </main>
@@ -525,7 +573,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":false,"closeEffect":"zoom","openEffect":"zoom","descPosition":"bottom"});
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","descPosition":"bottom","loop":false,"openEffect":"zoom","closeEffect":"zoom"});
 (function() {
   let previousOnload = window.onload;
   window.onload = () => {
