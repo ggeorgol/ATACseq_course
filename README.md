@@ -7,7 +7,7 @@
 
 <h2>Getting started</h2>
 
-Prior to the class you will need to setup a working directory, install tools and download the files which we are going to work with. The folder [tutorials](tutorials/) contains HTML and PDF files for each step. In order to get started either follow this README or download and follow instructions in the [00_Setup.html](tutorials/00_Setup.html) document. 
+Prior to the class you will need to setup a working directory, install tools and download the files which we are going to work with. The folder [tutorials](tutorials/) contains HTML and PDF files for each step. In order to get started either follow this README or download and follow instructions in the [00_Setup.pdf](tutorials/00_Setup.pdf) document. 
 
 Although the excercises here can be run on a local machine, it is highly recommended that you work on the AUTH HPC cluster. More information on the AUTH HPC cluster here: https://hpc.it.auth.gr/
 
