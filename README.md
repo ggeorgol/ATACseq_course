@@ -1,13 +1,13 @@
-<b style="font-size:32px"> ATAC-seq hands-on course for Applied Bioinformatics MSc program 2024</b>
+<h1> ATAC-seq hands-on course for Applied Bioinformatics MSc program 2024</h1>
 
 <b>Program website</b>: https://websites.auth.gr/appbio/<br>
 <b>Instructor</b>: Grigorios Georgolopoulos, PhD<br>
 <b>For questions contact</b>: georgolog@gmail.com
 
 
-<h1>Getting started</h1>
+<h2>Getting started</h2>
 
-<h2> Setup working directory</h2>
+<h2>Setup working directory</h2>
 
 <h3>Login to AUTH cluster (Remote coding only)</h3>
 
