@@ -9,6 +9,10 @@ format:
     code-fold: true
     toc: true
     toc-location: left
+  pdf:
+    code-fold: true
+    toc: true
+    toc-location: left
 editor: visual
 ---
 

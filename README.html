@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Grigorios Georgolopoulos">
-<meta name="dcterms.date" content="2024-06-23">
 
-<title>00 Pre-class setup</title>
+<title>readme</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -59,110 +57,60 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="00_Setup_files/libs/clipboard/clipboard.min.js"></script>
-<script src="00_Setup_files/libs/quarto-html/quarto.js"></script>
-<script src="00_Setup_files/libs/quarto-html/popper.min.js"></script>
-<script src="00_Setup_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="00_Setup_files/libs/quarto-html/anchor.min.js"></script>
-<link href="00_Setup_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="00_Setup_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="00_Setup_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="00_Setup_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="00_Setup_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="README_files/libs/clipboard/clipboard.min.js"></script>
+<script src="README_files/libs/quarto-html/quarto.js"></script>
+<script src="README_files/libs/quarto-html/popper.min.js"></script>
+<script src="README_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="README_files/libs/quarto-html/anchor.min.js"></script>
+<link href="README_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="README_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="README_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="README_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="README_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
 
-<body>
+<body class="fullcontent">
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
-<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
-  <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#setup-working-directory" id="toc-setup-working-directory" class="nav-link active" data-scroll-target="#setup-working-directory"><span class="header-section-number">1</span> Setup working directory</a>
-  <ul class="collapse">
-  <li><a href="#login-to-auth-cluster-remote-coding-only" id="toc-login-to-auth-cluster-remote-coding-only" class="nav-link" data-scroll-target="#login-to-auth-cluster-remote-coding-only"><span class="header-section-number">1.1</span> Login to AUTH cluster (Remote coding only)</a>
-  <ul class="collapse">
-  <li><a href="#install-vscode-or-mobaxterm-windows-users-only" id="toc-install-vscode-or-mobaxterm-windows-users-only" class="nav-link" data-scroll-target="#install-vscode-or-mobaxterm-windows-users-only"><span class="header-section-number">1.1.1</span> Install VSCode or MobaXTerm (Windows Users Only)</a></li>
-  <li><a href="#connect-to-auth-cluster" id="toc-connect-to-auth-cluster" class="nav-link" data-scroll-target="#connect-to-auth-cluster"><span class="header-section-number">1.1.2</span> Connect to AUTH cluster</a></li>
-  </ul></li>
-  <li><a href="#clone-the-git-repo-with-the-course-material" id="toc-clone-the-git-repo-with-the-course-material" class="nav-link" data-scroll-target="#clone-the-git-repo-with-the-course-material"><span class="header-section-number">1.2</span> Clone the git repo with the course material</a></li>
-  </ul></li>
-  <li><a href="#creating-a-conda-environment" id="toc-creating-a-conda-environment" class="nav-link" data-scroll-target="#creating-a-conda-environment"><span class="header-section-number">2</span> Creating a conda environment</a></li>
-  <li><a href="#data-download" id="toc-data-download" class="nav-link" data-scroll-target="#data-download"><span class="header-section-number">3</span> Data download</a></li>
-  </ul>
-<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="../00_Setup.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
-</div>
-<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-</div>
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">00 Pre-class setup</h1>
-</div>
 
 
 
-<div class="quarto-title-meta">
-
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Grigorios Georgolopoulos </p>
-          </div>
-  </div>
-    
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">June 23, 2024</p>
-    </div>
-  </div>
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<p>In this chapter you will learn how to setup your environment either on the remote server or locally.</p>
-<p><strong>Learning objectives</strong></p>
-<ol type="1">
-<li>Creating a directory</li>
-<li>Cloning a git repo with class material</li>
-<li>Setting up a conda environment</li>
-<li>Download data</li>
-</ol>
-<section id="setup-working-directory" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Setup working directory</h1>
-<section id="login-to-auth-cluster-remote-coding-only" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="login-to-auth-cluster-remote-coding-only"><span class="header-section-number">1.1</span> Login to AUTH cluster (Remote coding only)</h2>
+<p><b style="font-size:32px"> ATAC-seq hands-on course for Applied Bioinformatics MSc program</b></p>
+<p>Program website: https://websites.auth.gr/appbio/</p>
+<h1>
+Getting started
+</h1>
+<h2 class="anchored">
+Setup working directory
+</h2>
+<h3 class="anchored">
+Login to AUTH cluster (Remote coding only)
+</h3>
 <p>Before setting up, there are some necessary steps specific for remote coding which are specific to Windows users. If you are a Linux os MacOS user skip to <a href="#unix-linuxmacos-users">section</a></p>
-<section id="install-vscode-or-mobaxterm-windows-users-only" class="level3" data-number="1.1.1">
-<h3 data-number="1.1.1" class="anchored" data-anchor-id="install-vscode-or-mobaxterm-windows-users-only"><span class="header-section-number">1.1.1</span> Install VSCode or MobaXTerm (Windows Users Only)</h3>
-<p>In order to use SSH (remote host access) to the AUTH computer cluster you will either need to have Windows Subprocesses for Linux <a href="https://learn.microsoft.com/en-us/windows/wsl/install">(WSL)</a> installed and enabled or use and IDE such as <a href="https://code.visualstudio.com/">VSCode</a> (preferable) or <a href="https://mobaxterm.mobatek.net/">MobaXTerm</a></p>
-</section>
-<section id="connect-to-auth-cluster" class="level3" data-number="1.1.2">
-<h3 data-number="1.1.2" class="anchored" data-anchor-id="connect-to-auth-cluster"><span class="header-section-number">1.1.2</span> Connect to AUTH cluster</h3>
+<h4 class="anchored">
+Install VSCode or MobaXTerm IDE (Windows Users Only)
+</h4>
+<p>In order to use SSH (remote host access) to the AUTH computer cluster you will either need to have Windows Subprocesses for Linux <a href="https://learn.microsoft.com/en-us/windows/wsl/install">(WSL)</a> installed and enabled or use and IDE (integrated development environment) such as <a href="https://code.visualstudio.com/">VSCode</a> (preferable) or <a href="https://mobaxterm.mobatek.net/">MobaXTerm</a></p>
+<h4 class="anchored">
+Connect to AUTH cluster
+</h4>
 <p>If you are not logged in an AUTH network (e.g.&nbsp;working from home), make sure you have eduVPN enabled. More info <a href="https://it.auth.gr/manuals/eduvpn/">here</a></p>
 <p>Then open a terminal window or your IDE and type the following:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="pp">[</span><span class="ss">username</span><span class="pp">]</span>@aristotle.it.auth.gr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-</section>
-<section id="clone-the-git-repo-with-the-course-material" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="clone-the-git-repo-with-the-course-material"><span class="header-section-number">1.2</span> Clone the git repo with the course material</h2>
+<h3 class="anchored">
+Clone the git repo with the course material
+</h3>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/ggeorgol/ATACseq_course</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ATACseq_course</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-</section>
-<section id="creating-a-conda-environment" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Creating a conda environment</h1>
+<h2 class="anchored">
+Creating a conda environment
+</h2>
 <p>There is an established set of tools required for analyzing high throughput sequencing data, and ATAC-seq in particular. For this reason we will create a virtual environment using the ANACONDA/miniconda (<code>conda</code> for short) package manager.</p>
 <p>Specifically, we are going to need the following tools:</p>
 <ul>
@@ -186,9 +134,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-n</span> atac python=3.10 htslib samtools picard deeptools bedtools bedops subread</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>To activate the environment type the following:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate atac</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="data-download" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Data download</h1>
+<h2 class="anchored">
+Data download
+</h2>
 <p>In this course we are going to work with ATAC-seq data generated by the <a href="https://www.encodeproject.org/matrix/?type=Experiment&amp;control_type!=*&amp;status=released&amp;perturbed=false&amp;assay_title=ATAC-seq">ENCODE project</a>. We will work with naïve and activated T-cells from a female adult with the following accession numbers: <a href="https://www.encodeproject.org/experiments/ENCSR977LVI/">ENCSR977LVI</a>, and <a href="https://www.encodeproject.org/experiments/ENCSR558ZSN/">ENCSR558ZSN</a>. We will use the alignment (BAM) files and the already generated peaks.</p>
 <p>If you work on the AUTH cluster, the data should be stored in your personal scartch space <code>$SRCATCH</code>. Keep in mind that data in <code>$SCRATCH</code> will be stored for 30 days only before the scratch space is cleaned up.</p>
 <p>If you work on the cluster, type:</p>
@@ -216,7 +164,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Peaks</span></span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-P</span> <span class="va">${DATADIR}</span>/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF235RAD/@@download/ENCFF235RAD.bed.gz</span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-P</span> <span class="va">${DATADIR}</span>/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF002MKC/@@download/ENCFF002MKC.bed.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
 
 </main>
 <!-- /main column -->
