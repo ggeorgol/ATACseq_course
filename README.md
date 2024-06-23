@@ -7,6 +7,10 @@
 
 <h2>Getting started</h2>
 
+Although the excercises here can be run on a local machine, it is highly recommended that you work on the AUTH HPC cluster.
+
+More information on the AUTH HPC cluster here: https://hpc.it.auth.gr/
+
 <h2>Setup working directory</h2>
 
 <h3>Login to AUTH cluster (Remote coding only)</h3>
@@ -17,7 +21,7 @@ Before setting up, there are some necessary steps specific for remote coding whi
 
 In order to use SSH (remote host access) to the AUTH computer cluster you will either need to have Windows Subprocesses for Linux [(WSL)](https://learn.microsoft.com/en-us/windows/wsl/install) installed and enabled or use and IDE (integrated development environment) such as [VSCode](https://code.visualstudio.com/) (preferable) or [MobaXTerm](https://mobaxterm.mobatek.net/)
 
-<h4>Connect to AUTH cluster</h4>
+<h4>Connect to AUTH cluster (Remote coding only)</h4>
 
 If you are not logged in an AUTH network (e.g. working from home), make sure you have eduVPN enabled. More info [here](https://it.auth.gr/manuals/eduvpn/)
 
