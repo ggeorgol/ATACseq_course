@@ -14,7 +14,7 @@ format:
     toc: true
     toc-location: left
 editor: visual
-engine: knitr
+jupyter: python3
 ---
 
 In this chapter you will learn how to perform quality control (QC) of the aligned reads, check for signal enrichment and generate ATAC-seq signal tracks to be viewed using a genome browser.
