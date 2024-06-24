@@ -1,0 +1,31 @@
+---
+title: "02 Post-alignment QC"
+author: Grigorios Georgolopoulos
+date: last-modified
+theme: yeti
+number-sections: true
+format:
+  html:
+    code-fold: true
+    toc: true
+    toc-location: left
+  pdf:
+    code-fold: true
+    toc: true
+    toc-location: left
+editor: visual
+engine: knitr
+---
+
+In this chapter you will learn how to perform quality control (QC) of the aligned reads, check for signal enrichment and generate ATAC-seq signal tracks to be viewed using a genome browser.
+
+**Learning objectives**
+
+1. Check number of aligned reads
+2. Check insert size distribution
+3. Calculate TSS enrichment
+4. Generate bigWigs
+
+# Working with BAM files
+
+The SAM/BAM (Sequence/Binary Alignment Map) format is the most common alignment file format. SAM is a text format which can be viewed directly with any text editor while BAM is compressed binary format for which we need specific tools. For SAM/BAM manipulation, viewing, and querying we use SAMtools[[1](REF)]

@@ -106,16 +106,16 @@ DATADIR=data
 
 Continue
 ```bash
-mkdir -p ${DATADIR}$/{ENCSR977LVI,ENCSR558ZSN}
+mkdir -p ${DATADIR}/{ENCSR977LVI,ENCSR558ZSN}
 
 # Download ENCSR558ZSN dataset
 # BAM files
-wget -P ${DATADIR}$/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF287DFF/@@download/ENCFF287DFF.bam
-wget -P ${DATADIR}$/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF218OSF/@@download/ENCFF218OSF.bam
+wget -P ${DATADIR}/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF287DFF/@@download/ENCFF287DFF.bam
+wget -P ${DATADIR}/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF218OSF/@@download/ENCFF218OSF.bam
 
 # Peaks
-wget -P ${DATADIR}$/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF002MKC/@@download/ENCFF002MKC.bed.gz
-wget -P ${DATADIR}$/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF235RAD/@@download/ENCFF235RAD.bed.gz
+wget -P ${DATADIR}/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF002MKC/@@download/ENCFF002MKC.bed.gz
+wget -P ${DATADIR}/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF235RAD/@@download/ENCFF235RAD.bed.gz
 
 # Download ENCSR558ZSN dataset
 # BAM files
