@@ -28,4 +28,33 @@ In this chapter you will learn how to perform quality control (QC) of the aligne
 
 # Working with BAM files
 
-The SAM/BAM (Sequence/Binary Alignment Map) format is the most common alignment file format. SAM is a text format which can be viewed directly with any text editor while BAM is compressed binary format for which we need specific tools. For SAM/BAM manipulation, viewing, and querying we use SAMtools[[1](REF)]
+The SAM/BAM (Sequence/Binary Alignment Map) format is the most common alignment file format. SAM is a text format which can be viewed directly with any text editor while BAM is compressed binary format for which we need specific tools. For SAM/BAM manipulation, viewing, and querying we use SAMtools [[1](REF)].
+
+The SAM/BAM file consists of the header and the alignment section. The header contains file matadata such as format version, sort order of the alignments, information about the reference sequences used, the read group etc. The alignment section contains detailed mapping (alignment) information for each read such as the location on the reference sequence where it is aligned to, read length, information about mismatches/gaps/inserts etc, mapping quality, etc. Detailed information on the SAM specification can be found [here](https://samtools.github.io/hts-specs/SAMv1.pdf).
+
+Here are some things we can do with SAMtools:
+1. View SAM/BAM files
+2. Count reads
+3. Get summary statistics
+4. Get per chromosome coverage
+5. Calculate sequencing depth at a position
+6. Calculate coverage given a BED file
+
+And many more! You can find out more about the SAMtools tools [here](http://www.htslib.org/doc/samtools-flagstat.html)
+
+## Count number of aligned reads
+
+One of the first step we need to do upon alignment is to figure out if we have sufficient amount of reads for downstream analysis. If the read number is low then any calculations, particularly for genome-wide application, will probably be underpowered. According to [ENCODE data standards for ATAC-seq](https://www.encodeproject.org/atac-seq/), for a successfull ATAC-seq library we need 25 million non-duplicate, non-mitochondrial aligned reads for single-end sequencing and 50 million for paired-ended sequencing (i.e. 25 million fragments)
+
+*Q: Do you know the difference between, read, fragment and insert?*
+
+Let's count how many reads we have in one of our BAM files
+```{bash}
+module load gcc miniconda3
+source $CONDA_PROFILE/conda.sh
+conda activate atac
+
+BAM=$DATADIR/ENCSR558ZSN/ENCFF218OSF.bam
+
+samtools view -c $BAM
+```
