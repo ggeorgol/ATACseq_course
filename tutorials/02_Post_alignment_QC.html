@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Grigorios Georgolopoulos">
-<meta name="dcterms.date" content="2024-06-24">
+<meta name="dcterms.date" content="2024-06-30">
 
 <title>02 Post-alignment QC</title>
 <style>
@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -77,7 +111,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 24, 2024</p>
+      <p class="date">June 30, 2024</p>
     </div>
   </div>
   
@@ -101,20 +135,19 @@ ul.task-list li input[type="checkbox"] {
 <h1 data-number="1"><span class="header-section-number">1</span> Working with BAM files</h1>
 <p>The SAM/BAM (Sequence/Binary Alignment Map) format is the most common alignment file format. SAM is a text format which can be viewed directly with any text editor while BAM is compressed binary format for which we need specific tools. For SAM/BAM manipulation, viewing, and querying we use SAMtools [<a href="REF">1</a>].</p>
 <p>The SAM/BAM file consists of the header and the alignment section. The header contains file matadata such as format version, sort order of the alignments, information about the reference sequences used, the read group etc. The alignment section contains detailed mapping (alignment) information for each read such as the location on the reference sequence where it is aligned to, read length, information about mismatches/gaps/inserts etc, mapping quality, etc. Detailed information on the SAM specification can be found <a href="https://samtools.github.io/hts-specs/SAMv1.pdf">here</a>.</p>
-<p>Here are some things we can do with SAMtools: 1. View SAM/BAM files 2. Count reads 3. Get summary statistics 4. Get per chromosome coverage 5. Calculate sequencing depth at a position 6. Calculate coverage given a BED file</p>
+<p>Here are some things we can do with SAMtools: 1. View SAM/BAM files 2. Count reads 3. Get summary statistics 4. Calculate fragment size distribution 6. Calculate coverage given a BED file</p>
 <p>And many more! You can find out more about the SAMtools tools <a href="http://www.htslib.org/doc/samtools-flagstat.html">here</a></p>
 <section id="count-number-of-aligned-reads" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="count-number-of-aligned-reads"><span class="header-section-number">1.1</span> Count number of aligned reads</h2>
 <p>One of the first step we need to do upon alignment is to figure out if we have sufficient amount of reads for downstream analysis. If the read number is low then any calculations, particularly for genome-wide application, will probably be underpowered. According to <a href="https://www.encodeproject.org/atac-seq/">ENCODE data standards for ATAC-seq</a>, for a successfull ATAC-seq library we need 25 million non-duplicate, non-mitochondrial aligned reads for single-end sequencing and 50 million for paired-ended sequencing (i.e.&nbsp;25 million fragments)</p>
 <p><em>Q: Do you know the difference between, read, fragment and insert?</em></p>
 <p>Let’s count how many reads we have in one of our BAM files</p>
-<pre class="{bash}"><code>module load gcc miniconda3
-source $CONDA_PROFILE/conda.sh
-conda activate atac
-
-BAM=$DATADIR/ENCSR558ZSN/ENCFF218OSF.bam
-
-samtools view -c $BAM</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">DATADIR</span><span class="op">=</span><span class="va">${SCRATCH}</span>/ATACseq_course/data</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">BAM</span><span class="op">=</span><span class="va">$DATADIR</span>/ENCSR558ZSN/ENCFF218OSF.bam</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-c</span> <span class="at">-@</span> 6 <span class="va">$BAM</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Just getting the number of reads in a BAM file is not enough. A BAM file will contain all the input reads but this does not mean all the reads are aligned. To get a break down of the alignment events in the BAM file we count the different alignment flags. Flags are bitwise attributes that encode an alignment description such as whether the read is mapped or not, whether it is a PCR duplicate, whether it is read1 or read2 etc. More information about the SAM Flags can be found <a href="https://en.wikipedia.org/wiki/SAM_(file_format)#Bitwise_flags">here</a>.</p>
+<pre class="{bash}"><code>samtools flagstat -@ 6 $BAM</code></pre>
 </section>
 </section>
 

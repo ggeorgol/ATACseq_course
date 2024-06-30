@@ -14,7 +14,7 @@ format:
     toc: true
     toc-location: left
 editor: visual
-jupyter: python3
+engine: knitr
 ---
 
 In this chapter you will learn how to perform quality control (QC) of the aligned reads, check for signal enrichment and generate ATAC-seq signal tracks to be viewed using a genome browser.
@@ -36,8 +36,7 @@ Here are some things we can do with SAMtools:
 1. View SAM/BAM files
 2. Count reads
 3. Get summary statistics
-4. Get per chromosome coverage
-5. Calculate sequencing depth at a position
+4. Calculate fragment size distribution
 6. Calculate coverage given a BED file
 
 And many more! You can find out more about the SAMtools tools [here](http://www.htslib.org/doc/samtools-flagstat.html)
@@ -49,12 +48,15 @@ One of the first step we need to do upon alignment is to figure out if we have s
 *Q: Do you know the difference between, read, fragment and insert?*
 
 Let's count how many reads we have in one of our BAM files
-```{bash}
-module load gcc miniconda3
-source $CONDA_PROFILE/conda.sh
-conda activate atac
-
+```bash
+DATADIR=${SCRATCH}/ATACseq_course/data
 BAM=$DATADIR/ENCSR558ZSN/ENCFF218OSF.bam
 
-samtools view -c $BAM
+samtools view -c -@ 6 $BAM
+```
+
+Just getting the number of reads in a BAM file is not enough. A BAM file will contain all the input reads but this does not mean all the reads are aligned. To get a break down of the alignment events in the BAM file we count the different alignment flags. Flags are bitwise attributes that encode an alignment description such as whether the read is mapped or not, whether it is a PCR duplicate, whether it is read1 or read2 etc. More information about the SAM Flags can be found [here](https://en.wikipedia.org/wiki/SAM_(file_format)#Bitwise_flags).
+
+```{bash}
+samtools flagstat -@ 6 $BAM
 ```
