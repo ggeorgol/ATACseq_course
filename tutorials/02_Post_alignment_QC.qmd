@@ -26,6 +26,14 @@ In this chapter you will learn how to perform quality control (QC) of the aligne
 3. Calculate TSS enrichment
 4. Generate bigWigs
 
+Before we begin, let's create a directory where we will store the results from this section
+
+```bash
+RESULTS=results/02_post_alignment_qc
+mkdir -p $RESULTS
+```
+
+
 # Working with BAM files
 
 The SAM/BAM (Sequence/Binary Alignment Map) format is the most common alignment file format. SAM is a text format which can be viewed directly with any text editor while BAM is compressed binary format for which we need specific tools. For SAM/BAM manipulation, viewing, and querying we use SAMtools [[1](REF)].
@@ -48,19 +56,40 @@ One of the first step we need to do upon alignment is to figure out if we have s
 *Q: Do you know the difference between, read, fragment and insert?*
 
 Let's count how many reads we have in one of our BAM files
-```{bash}
+```bash
 DATADIR=data
 BAM=$DATADIR/ENCSR558ZSN/ENCFF218OSF.bam
 
 samtools view -c -@ 6 $BAM
+```
+```
+68069008
 ```
 
 ## Get alignment summary stats
 
 Just getting the number of reads in a BAM file is not enough. A BAM file will contain all the input reads but this does not mean all the reads are aligned. To get a break down of the alignment events in the BAM file we count the different alignment flags. Flags are bitwise attributes that encode an alignment description such as whether the read is mapped or not, whether it is a PCR duplicate, whether it is read1 or read2 etc. More information about the SAM Flags can be found [here](https://en.wikipedia.org/wiki/SAM_(file_format)#Bitwise_flags).
 
-```{bash}
+```bash
 samtools flagstat -@ 6 $BAM
+```
+```
+68069008 + 0 in total (QC-passed reads + QC-failed reads)
+68069008 + 0 primary
+0 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+0 + 0 primary duplicates
+68069008 + 0 mapped (100.00% : N/A)
+68069008 + 0 primary mapped (100.00% : N/A)
+68069008 + 0 paired in sequencing
+34034504 + 0 read1
+34034504 + 0 read2
+68069008 + 0 properly paired (100.00% : N/A)
+68069008 + 0 with itself and mate mapped
+0 + 0 singletons (0.00% : N/A)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ>=5)
 ```
 
 In these files, the reads are already filtered. Some typical filtering criteria of ATAC seq aligned reads include:
@@ -81,12 +110,33 @@ unfiltered.bam
 
 ## Indexing BAM files
 
-The speed of reading BAM files relies on an index which allows quick query of coordinate sorted reads. The index files have the `.bai` extension. To generate index files the BAM should be coordinate sorted:
+The speed of reading BAM files relies on an index which allows quick query of coordinate sorted reads. The index files have the `.bai` extension. Many downstream analyses and tools rely on the index for fast BAM querying so it is important to always index the BAM files.
 
-```{bash}
+To generate index files the BAM should be coordinate sorted. Let's look at the BAM header and find the line where it reports the sort order (SO:).
+
+```bash
 BAM=data/ENCSR558ZSN/ENCFF218OSF.bam 
 samtools view -H $BAM | grep SO:
 ```
+```
+@HD     VN:1.6  SO:coordinate
+```
 
-## Checking insert sizes
+Great! This means that these are coordinate sorted, i.e. sorted by chromosome (seqname) name first, then by start coordinate. Now we can index the BAM file
 
+```bash
+cd data/ENCSR558ZSN/
+samtools index ENCFF218OSF.bam
+cd ../../
+```
+
+# Checking insert sizes
+
+```bash
+picard CollectInsertSizeMetrics \
+ -I ${BAM} \
+ -O ${RESULTS}/ENCFF218OSF.insert.stats \
+ -H ${RESULTS}/ENCFF218OSF.insert.png \
+ -M 0.5
+```
+![Insert size profile histogram](assets/ENCFF218OSF.insert.pdf){.lightbox}

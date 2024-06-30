@@ -69,6 +69,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="02_Post_alignment_QC_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="02_Post_alignment_QC_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="02_Post_alignment_QC_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="02_Post_alignment_QC_files/libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="02_Post_alignment_QC_files/libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="02_Post_alignment_QC_files/libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 
 
 </head>
@@ -84,7 +87,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#working-with-bam-files" id="toc-working-with-bam-files" class="nav-link active" data-scroll-target="#working-with-bam-files"><span class="header-section-number">1</span> Working with BAM files</a>
   <ul class="collapse">
   <li><a href="#count-number-of-aligned-reads" id="toc-count-number-of-aligned-reads" class="nav-link" data-scroll-target="#count-number-of-aligned-reads"><span class="header-section-number">1.1</span> Count number of aligned reads</a></li>
+  <li><a href="#get-alignment-summary-stats" id="toc-get-alignment-summary-stats" class="nav-link" data-scroll-target="#get-alignment-summary-stats"><span class="header-section-number">1.2</span> Get alignment summary stats</a></li>
+  <li><a href="#indexing-bam-files" id="toc-indexing-bam-files" class="nav-link" data-scroll-target="#indexing-bam-files"><span class="header-section-number">1.3</span> Indexing BAM files</a></li>
   </ul></li>
+  <li><a href="#checking-insert-sizes" id="toc-checking-insert-sizes" class="nav-link" data-scroll-target="#checking-insert-sizes"><span class="header-section-number">2</span> Checking insert sizes</a></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="../02_Post_alignment_QC.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
 </div>
@@ -131,6 +137,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Calculate TSS enrichment</li>
 <li>Generate bigWigs</li>
 </ol>
+<p>Before we begin, let’s create a directory where we will store the results from this section</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">RESULTS</span><span class="op">=</span>results/02_post_alignment_qc</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">$RESULTS</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <section id="working-with-bam-files" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Working with BAM files</h1>
 <p>The SAM/BAM (Sequence/Binary Alignment Map) format is the most common alignment file format. SAM is a text format which can be viewed directly with any text editor while BAM is compressed binary format for which we need specific tools. For SAM/BAM manipulation, viewing, and querying we use SAMtools [<a href="REF">1</a>].</p>
@@ -142,13 +151,70 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>One of the first step we need to do upon alignment is to figure out if we have sufficient amount of reads for downstream analysis. If the read number is low then any calculations, particularly for genome-wide application, will probably be underpowered. According to <a href="https://www.encodeproject.org/atac-seq/">ENCODE data standards for ATAC-seq</a>, for a successfull ATAC-seq library we need 25 million non-duplicate, non-mitochondrial aligned reads for single-end sequencing and 50 million for paired-ended sequencing (i.e.&nbsp;25 million fragments)</p>
 <p><em>Q: Do you know the difference between, read, fragment and insert?</em></p>
 <p>Let’s count how many reads we have in one of our BAM files</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">DATADIR</span><span class="op">=</span><span class="va">${SCRATCH}</span>/ATACseq_course/data</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">BAM</span><span class="op">=</span><span class="va">$DATADIR</span>/ENCSR558ZSN/ENCFF218OSF.bam</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-c</span> <span class="at">-@</span> 6 <span class="va">$BAM</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Just getting the number of reads in a BAM file is not enough. A BAM file will contain all the input reads but this does not mean all the reads are aligned. To get a break down of the alignment events in the BAM file we count the different alignment flags. Flags are bitwise attributes that encode an alignment description such as whether the read is mapped or not, whether it is a PCR duplicate, whether it is read1 or read2 etc. More information about the SAM Flags can be found <a href="https://en.wikipedia.org/wiki/SAM_(file_format)#Bitwise_flags">here</a>.</p>
-<pre class="{bash}"><code>samtools flagstat -@ 6 $BAM</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="va">DATADIR</span><span class="op">=</span>data</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="va">BAM</span><span class="op">=</span><span class="va">$DATADIR</span>/ENCSR558ZSN/ENCFF218OSF.bam</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-c</span> <span class="at">-@</span> 6 <span class="va">$BAM</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>68069008</code></pre>
 </section>
+<section id="get-alignment-summary-stats" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="get-alignment-summary-stats"><span class="header-section-number">1.2</span> Get alignment summary stats</h2>
+<p>Just getting the number of reads in a BAM file is not enough. A BAM file will contain all the input reads but this does not mean all the reads are aligned. To get a break down of the alignment events in the BAM file we count the different alignment flags. Flags are bitwise attributes that encode an alignment description such as whether the read is mapped or not, whether it is a PCR duplicate, whether it is read1 or read2 etc. More information about the SAM Flags can be found <a href="https://en.wikipedia.org/wiki/SAM_(file_format)#Bitwise_flags">here</a>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> flagstat <span class="at">-@</span> 6 <span class="va">$BAM</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>68069008 + 0 in total (QC-passed reads + QC-failed reads)
+68069008 + 0 primary
+0 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+0 + 0 primary duplicates
+68069008 + 0 mapped (100.00% : N/A)
+68069008 + 0 primary mapped (100.00% : N/A)
+68069008 + 0 paired in sequencing
+34034504 + 0 read1
+34034504 + 0 read2
+68069008 + 0 properly paired (100.00% : N/A)
+68069008 + 0 with itself and mate mapped
+0 + 0 singletons (0.00% : N/A)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ&gt;=5)</code></pre>
+<p>In these files, the reads are already filtered. Some typical filtering criteria of ATAC seq aligned reads include: * Filter for uniquely mapped reads with end-to-end alignment. * Remove reads mapping to mitochondrial DNA. * Remove PCR duplicates.</p>
+<p>This is how the command would look like:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="dt">\</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>-bh <span class="dt">\ </span># Return BAM file and include header</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">-f</span> 2 <span class="dt">\ </span># Include reads that are mapped in proper pair</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">-F</span> 1024 <span class="dt">\ </span># Exclude reads that are PCR or optical duplicates</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">-o</span> filtered.bam <span class="dt">\ </span># Define output file</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">unfiltered.bam</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="indexing-bam-files" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="indexing-bam-files"><span class="header-section-number">1.3</span> Indexing BAM files</h2>
+<p>The speed of reading BAM files relies on an index which allows quick query of coordinate sorted reads. The index files have the <code>.bai</code> extension. Many downstream analyses and tools rely on the index for fast BAM querying so it is important to always index the BAM files.</p>
+<p>To generate index files the BAM should be coordinate sorted. Let’s look at the BAM header and find the line where it reports the sort order (SO:).</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="va">BAM</span><span class="op">=</span>data/ENCSR558ZSN/ENCFF218OSF.bam </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-H</span> <span class="va">$BAM</span> <span class="kw">|</span> <span class="fu">grep</span> SO:</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>@HD     VN:1.6  SO:coordinate</code></pre>
+<p>Great! This means that these are coordinate sorted, i.e.&nbsp;sorted by chromosome (seqname) name first, then by start coordinate. Now we can index the BAM file</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/ENCSR558ZSN/</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> index ENCFF218OSF.bam</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../../</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="checking-insert-sizes" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Checking insert sizes</h1>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">picard</span> CollectInsertSizeMetrics <span class="dt">\</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a> <span class="at">-I</span> <span class="va">${BAM}</span> <span class="dt">\</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a> <span class="at">-O</span> <span class="va">${RESULTS}</span>/ENCFF218OSF.insert.stats <span class="dt">\</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a> <span class="at">-H</span> <span class="va">${RESULTS}</span>/ENCFF218OSF.insert.png <span class="dt">\</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a> <span class="at">-M</span> 0.5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="assets/ENCFF218OSF.insert.pdf" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1" title="Insert size profile histogram"><embed src="assets/ENCFF218OSF.insert.pdf" class="img-fluid"></a></p>
+<figcaption>Insert size profile histogram</figcaption>
+</figure>
+</div>
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">Insert size profile histogram</span>
+</div>
 </section>
 
 </main>
@@ -563,6 +629,31 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","descPosition":"bottom","loop":false,"closeEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
 
 
 
