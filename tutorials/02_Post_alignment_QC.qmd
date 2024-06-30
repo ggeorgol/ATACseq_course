@@ -139,4 +139,96 @@ picard CollectInsertSizeMetrics \
  -H ${RESULTS}/ENCFF218OSF.insert.png \
  -M 0.5
 ```
-![Insert size profile histogram](assets/ENCFF218OSF.insert.pdf){.lightbox}
+![Insert size profile histogram](assets/ENCFF218OSF.insert.png){.lightbox}
+
+*What do the different peaks in the histogram represent?*
+
+# Generate bigWig density tracks
+
+The simplest way to check if your ATAC seq experiment is successfull, is to load the data in your favorite genome browser ([UCSC](https://genome.ucsc.edu/index.html), or [IGV](https://igv.org/)) and look for signal enrichment across the genome. To do that, we need to convert the mapped reads into a density track (i.e. frequency of aligned reads/gragments per base or per bin). This essentially counts how many aligned fragments pile up over a genomic position or bin. In this example we will use `deepTools` to do this which has a very convenient tool to do this while also normalizing BAM files for read depth.
+
+```bash
+for BAM in data/ENCSR*/*bam; do
+NAME=$(basename $BAM .bam)
+DIR=$(dirname $BAM)
+BAI=${BAM}.bai
+
+# Check if index exists and generate it if not
+if [ ! -f ${BAI} ]; then
+samtools index -@ 6 -o ${DIR}/${NAME}.bam.bai ${BAM}
+fi
+
+bamCoverage \
+-b ${BAM} \
+-bs 10 \
+-p 6 \
+--effectiveGenomeSize 2913022398 \
+--normalizeUsing RPGC \
+--skipNAs \
+-o ${RESULTS}/${NAME}.RPGC.bs10.bw
+
+done
+```
+
+# Calculate TSS enrichment
+
+The Transcription Start Site is the location on the gene body where DNA transcription to RNA is initiated. These are open chromatin sites and they should show enrichment in ATAC NFR (nucleosome-free reads). According to ENCODE standards, for an ideal ATAC seq experiment aligned against the GRCh38 reference human genome, normalized enrichment around the TSS should be above 7. Any value between 5-7 is also acceptable while anything below 5 indicates a failed library. More details can be found [here](https://www.encodeproject.org/atac-seq/).
+
+To calculate the enrichment around TSS we first need to download a gene annotation reference for GRCh38. Let's download the GENCODE v46 from UCSC Genome Browser.
+
+```bash
+wget -P data/annotations/hg38/gencode https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_46/gencode.v46.basic.annotation.gtf.gz
+```
+
+Then, we need to calculate the density in binned windows (±2000bp, 10bp bins) around the point of interest. In this case it's all the TSS listed in the Gencode annotation. Again, we are going to use another convenient function from `deepTools` which calculates the signal (ATACseq) density over these bins across all TSSs.
+
+```bash
+computeMatrix reference-point \
+-R data/annotations/hg38/gencode/gencode.v46.basic.annotation.gtf.gz \
+-S results/02_post_alignment_qc/*.bw \
+--referencePoint TSS \
+-b 2000 \
+-a 2000 \
+-bs 10 \
+--outFileName results/02_post_alignment_qc/gencode.v46.TSS.enrichment.txt.gz \
+--skipZeros \
+--smartLabels \
+-p 12 # Number of processors
+```
+
+Now, in order to calculate the normalized enrichment, we need to divide all values per bin by the average of the leftmost 10 bins (100bp) and rightmost 10 bins and divide all bins with this normaliztion factor. This replicates the way ENCODE calculates TSS enrichment. For details see [this thread](https://github.com/ENCODE-DCC/atac-seq-pipeline/issues/50#issuecomment-490999002). 
+
+For this part we will work in R. 
+
+```bash
+module load gcc r/4.2.2-2oxptjk
+R
+```
+
+Then, within R type the following:
+```{r}
+# Install and load required packages
+if (!require("data.table", quietly = TRUE)) {
+  install.packages("data.table")
+  }
+
+if (!require("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+  }
+
+if (!require("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+  }
+
+BiocManager::install("GenomicRanges")
+remotes::install_version("Matrix", version = "1.6", repos = "http://cran.us.r-project.org")
+
+library(data.table)
+library(GenomicRanges)
+
+# Load a function that imports and parses the `computeMatrix` output
+source("https://raw.githubusercontent.com/ggeorgol/ggutils/main/import_computeMatrix.R")
+
+# Load `computeMatrix` output
+mtx <- import_computeMatrix("results/02_post_alignment_qc/gencode.v46.TSS.enrichment.txt.gz", sparse = FALSE)
+```
