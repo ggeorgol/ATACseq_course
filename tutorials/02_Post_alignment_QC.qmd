@@ -45,7 +45,7 @@ Here are some things we can do with SAMtools:
 2. Count reads
 3. Get summary statistics
 4. Calculate fragment size distribution
-6. Calculate coverage given a BED file
+6. Calculate TSS enrichment
 
 And many more! You can find out more about the SAMtools tools [here](http://www.htslib.org/doc/samtools-flagstat.html)
 
@@ -193,7 +193,8 @@ computeMatrix reference-point \
 --outFileName results/02_post_alignment_qc/gencode.v46.TSS.enrichment.txt.gz \
 --skipZeros \
 --smartLabels \
--p 12 # Number of processors
+--metagene \
+-p 24 # Number of processors
 ```
 
 Now, in order to calculate the normalized enrichment, we need to divide all values per bin by the average of the leftmost 10 bins (100bp) and rightmost 10 bins and divide all bins with this normaliztion factor. This replicates the way ENCODE calculates TSS enrichment. For details see [this thread](https://github.com/ENCODE-DCC/atac-seq-pipeline/issues/50#issuecomment-490999002). 
@@ -218,6 +219,10 @@ if (!require("BiocManager", quietly = TRUE)) {
 
 if (!require("remotes", quietly = TRUE)) {
   install.packages("remotes")
+  }
+
+if (!require("R.utils", quietly = TRUE)) {
+  install.packages("R.utils")
   }
 
 BiocManager::install("GenomicRanges")
