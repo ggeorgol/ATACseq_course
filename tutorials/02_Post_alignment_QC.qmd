@@ -191,6 +191,7 @@ computeMatrix reference-point \
 -a 2000 \
 -bs 10 \
 --outFileName results/02_post_alignment_qc/gencode.v46.TSS.enrichment.txt.gz \
+--missingDataAsZero \
 --skipZeros \
 --smartLabels \
 --metagene \
@@ -207,7 +208,7 @@ R
 ```
 
 Then, within R type the following:
-```{r}
+```r
 # Install and load required packages
 if (!require("data.table", quietly = TRUE)) {
   install.packages("data.table")
@@ -241,4 +242,30 @@ source("https://raw.githubusercontent.com/ggeorgol/ggutils/main/import_computeMa
 
 # Load `computeMatrix` output
 mtx <- import_computeMatrix("results/02_post_alignment_qc/gencode.v46.TSS.enrichment.txt.gz", sparse = FALSE)
+
+samples <- mtx$sample_labels
+
+png("results/02_post_alignment_qc/gencode.v46.TSS.enrichment.png", res = 120, height = 600, width = 600)
+par(las = 1, lend = 1)
+plot(0, type = "n", xlim = c(1, 400), ylim = c(0, 25), 
+  xaxt = "n", xaxs = "i", yaxs = "i",
+  xlab = "Distance from TSS", ylab = "TSS enrichment")
+abline(v = 201, lty = 2, col = "grey")
+cols <- setNames(seq_along(samples),
+nm = gsub("\\..*", "", samples))
+
+i <- 1
+for (sample in samples) {
+  z <- mtx$data[[sample]]$genes
+  z[is.na(z)] <- 0
+  cmu <- colMeans(z)
+  norm <- mean(c(cmu[1:10], cmu[391:400]))
+  cmu_norm <- cmu/norm
+  lines(cmu_norm, col = cols[i], lwd = 2)
+  i <- i + 1
+}
+axis(side = 1, at = c(1,201,400), labels = c("-2kb", "0", "+2kb"))
+legend("topright", legend = names(cols), col = cols, bty = "n", seg.len = 2, lwd = 2)
+dev.off()
 ```
+![TSS enrichment](assets/gencode.v46.TSS.enrichment.png){.lightbox}
