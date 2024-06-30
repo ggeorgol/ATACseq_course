@@ -48,15 +48,45 @@ One of the first step we need to do upon alignment is to figure out if we have s
 *Q: Do you know the difference between, read, fragment and insert?*
 
 Let's count how many reads we have in one of our BAM files
-```bash
-DATADIR=${SCRATCH}/ATACseq_course/data
+```{bash}
+DATADIR=data
 BAM=$DATADIR/ENCSR558ZSN/ENCFF218OSF.bam
 
 samtools view -c -@ 6 $BAM
 ```
+
+## Get alignment summary stats
 
 Just getting the number of reads in a BAM file is not enough. A BAM file will contain all the input reads but this does not mean all the reads are aligned. To get a break down of the alignment events in the BAM file we count the different alignment flags. Flags are bitwise attributes that encode an alignment description such as whether the read is mapped or not, whether it is a PCR duplicate, whether it is read1 or read2 etc. More information about the SAM Flags can be found [here](https://en.wikipedia.org/wiki/SAM_(file_format)#Bitwise_flags).
 
 ```{bash}
 samtools flagstat -@ 6 $BAM
 ```
+
+In these files, the reads are already filtered. Some typical filtering criteria of ATAC seq aligned reads include:
+* Filter for uniquely mapped reads with end-to-end alignment.
+* Remove reads mapping to mitochondrial DNA.
+* Remove PCR duplicates.
+
+This is how the command would look like:
+
+```bash
+samtools view \
+-bh \ # Return BAM file and include header
+-f 2 \ # Include reads that are mapped in proper pair
+-F 1024 \ # Exclude reads that are PCR or optical duplicates
+-o filtered.bam \ # Define output file
+unfiltered.bam
+```
+
+## Indexing BAM files
+
+The speed of reading BAM files relies on an index which allows quick query of coordinate sorted reads. The index files have the `.bai` extension. To generate index files the BAM should be coordinate sorted:
+
+```{bash}
+BAM=data/ENCSR558ZSN/ENCFF218OSF.bam 
+samtools view -H $BAM | grep SO:
+```
+
+## Checking insert sizes
+
