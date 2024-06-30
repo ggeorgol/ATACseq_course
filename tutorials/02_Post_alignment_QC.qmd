@@ -5,10 +5,6 @@ date: last-modified
 theme: yeti
 number-sections: true
 format:
-  html:
-    code-fold: true
-    toc: true
-    toc-location: left
   pdf:
     code-fold: true
     toc: true
@@ -231,7 +227,9 @@ BiocManager::install("GenomicRanges")
 }
 
 if (!require("Matrix", quietly = TRUE)) {
-  remotes::install_version("Matrix", version = "1.6", repos = "http://cran.us.r-project.org")
+  remotes::install_version("Matrix", 
+  version = "1.6", 
+  repos = "http://cran.us.r-project.org")
 }
 
 library(data.table)
@@ -246,7 +244,8 @@ mtx <- import_computeMatrix("results/02_post_alignment_qc/gencode.v46.TSS.enrich
 samples <- mtx$sample_labels
 
 # Plot the TSS enrichment profiles
-png("results/02_post_alignment_qc/gencode.v46.TSS.enrichment.png", res = 120, height = 600, width = 600)
+png("results/02_post_alignment_qc/gencode.v46.TSS.enrichment.png", 
+res = 120, height = 600, width = 600)
 par(las = 1, lend = 1)
 plot(0, type = "n", xlim = c(1, 400), ylim = c(0, 25), 
   xaxt = "n", xaxs = "i", yaxs = "i",
