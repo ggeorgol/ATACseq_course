@@ -5,6 +5,10 @@ date: last-modified
 theme: yeti
 number-sections: true
 format:
+  html:
+    code-fold: true
+    toc: true
+    toc-location: left
   pdf:
     code-fold: true
     toc: true
@@ -27,6 +31,8 @@ In this chapter you will learn about what are peak calling, peak annotation, as 
 Peak calling is a statistical method which allows us to identify regions enriched with fragments of accessible chromatin. This is a step necessary for all chromatin accessiblity assays such as ATAC-seq, ChIP-seq, DNase I-seq, MNase-seq, FAIRE-seq etc.
 
 The principle is simple. We break the genome into small windows, and we test whether the number of fragments (or reads) in a window is statistically higher than the number of fragments expected.
+
+One of the most popular peak calling tools is [MACS](https://macs3-project.github.io/MACS/). It was originally developed for ChIP-seq data but it has found applications in other assays including ATAC-seq, CUT&RUN etc. Although . Besides MACS, there are a few other options for calling ATAC-seq peaks such as [Genrich](https://github.com/jsh58/Genrich?tab=readme-ov-file#method) and [HMMRATAC](https://academic.oup.com/nar/article/47/16/e91/5519166).
 
 ![Peak calling overview from Yan et al., 2020](assets/peak_calling.png)
 
@@ -139,3 +145,17 @@ wc -l ${RESULTS}/unstim_peaks_shared_with_stim.bed
 *Why didn't we try `bedtools jaccard` this time?*
 
 *How many peaks in the stimulated set overlap by 50% the peaks in the unstimulated set?*
+
+# Peak annotation
+
+```bash
+conda install homer
+
+# Instal hg38 version of human genome
+~/.conda/envs/atac/share/homer/configureHomer.pl -install hg38
+
+annotatePeaks.pl $peaks hg38 -size given -CpG -annStats results/03_peaks/$(basename $peaks).annstats.txt > results/03_peaks/$(basename $peaks).annotated.txt
+```
+
+```r
+annotated <- data.table::fread("results/03_peaks/ENCFF002MKC.bed.sorted.annotated.txt", data.table = FALSE)

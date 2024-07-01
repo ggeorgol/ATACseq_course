@@ -5,10 +5,6 @@ date: last-modified
 theme: yeti
 number-sections: true
 format:
-  html:
-    code-fold: true
-    toc: true
-    toc-location: left
   pdf:
     code-fold: true
     toc: true

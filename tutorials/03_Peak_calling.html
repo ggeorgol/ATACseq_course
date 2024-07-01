@@ -88,6 +88,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#operations-with-genomic-intervals" id="toc-operations-with-genomic-intervals" class="nav-link" data-scroll-target="#operations-with-genomic-intervals"><span class="header-section-number">2</span> Operations with genomic intervals</a></li>
   <li><a href="#calculating-similarity-between-sets-of-intervals" id="toc-calculating-similarity-between-sets-of-intervals" class="nav-link" data-scroll-target="#calculating-similarity-between-sets-of-intervals"><span class="header-section-number">3</span> Calculating similarity between sets of intervals</a></li>
   <li><a href="#count-how-many-peaks-overlap-between-two-sets" id="toc-count-how-many-peaks-overlap-between-two-sets" class="nav-link" data-scroll-target="#count-how-many-peaks-overlap-between-two-sets"><span class="header-section-number">4</span> Count how many peaks overlap between two sets</a></li>
+  <li><a href="#peak-annotation" id="toc-peak-annotation" class="nav-link" data-scroll-target="#peak-annotation"><span class="header-section-number">5</span> Peak annotation</a></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="../03_Peak_calling.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
 </div>
@@ -138,6 +139,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1 data-number="1"><span class="header-section-number">1</span> Peak calling</h1>
 <p>Peak calling is a statistical method which allows us to identify regions enriched with fragments of accessible chromatin. This is a step necessary for all chromatin accessiblity assays such as ATAC-seq, ChIP-seq, DNase I-seq, MNase-seq, FAIRE-seq etc.</p>
 <p>The principle is simple. We break the genome into small windows, and we test whether the number of fragments (or reads) in a window is statistically higher than the number of fragments expected.</p>
+<p>One of the most popular peak calling tools is <a href="https://macs3-project.github.io/MACS/">MACS</a>. It was originally developed for ChIP-seq data but it has found applications in other assays including ATAC-seq, CUT&amp;RUN etc. Although . Besides MACS, there are a few other options for calling ATAC-seq peaks such as <a href="https://github.com/jsh58/Genrich?tab=readme-ov-file#method">Genrich</a> and <a href="https://academic.oup.com/nar/article/47/16/e91/5519166">HMMRATAC</a>.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="assets/peak_calling.png" class="img-fluid figure-img"></p>
@@ -150,7 +152,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>One of the most common tasks in genomic data analysis is genome arithmetic. How many genomic elements in list A overlap with elements in list B? What is the average ChIP-seq signal over the regions in my list? How far is this element for the nearest TSS? How can I extract intronic regions of a gene given the exons? These are some examples that involve genome arithmetic operations. Genome arithmetic operations occur on a genomic coordinate system which requires at least two values to define an interval; a start coordinate and an end coordinate which is typically denoted like so: <code>1234-2345</code>. If we operate on multiple sequences/scaffolds/chromosomes then we would need the sequence name (or chromosome name) and the notation would look like this <code>chrZ:1234:2345</code>.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="assets/bedops_intersect.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1" title="An example of calculating the intersects between to sets of intervals. From bedops documentation."><img src="assets/bedops_intersect.png" class="img-fluid figure-img" alt="An example of calculating the intersects between to sets of intervals. From bedops documentation."></a></p>
+<p><a href="assets/bedops_intersect.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1" title="An example of calculating the intersects between to sets of intervals. From bedops documentation."><img src="assets/bedops_intersect.png" class="img-fluid figure-img" alt="An example of calculating the intersects between to sets of intervals. From bedops documentation."></a></p>
 <figcaption>An example of calculating the intersects between to sets of intervals. From bedops documentation.</figcaption>
 </figure>
 </div>
@@ -162,7 +164,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> GZ <span class="kw">in</span> data/<span class="pp">*</span>/<span class="pp">*</span>bed.gz<span class="kw">;</span> <span class="cf">do</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gunzip</span> <span class="va">$GZ</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><em>Before performing any interval operations we need to make sure the files are position sorted</em></p>
+<p><strong>Before performing any interval operations we need to make sure the files are position sorted!</strong></p>
 <p>BEDOPS offers a convenient funciton for fast sorting of genomic intervals</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> BED <span class="kw">in</span> data/<span class="pp">*</span>/<span class="pp">*</span>.bed<span class="kw">;</span> <span class="cf">do</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Sorting </span><span class="va">${BED}</span><span class="st">..."</span></span>
@@ -241,14 +243,26 @@ intersection    union   jaccard n_intersections
 <h1 data-number="4"><span class="header-section-number">4</span> Count how many peaks overlap between two sets</h1>
 <p>A common task is to test how many peaks are shared between two samples. This will answer questions such as how similar is the accessible chromatin landscape between two treatments/cell types/timepoints etc.</p>
 <p>In this excercise we will evaluate how many peaks discovered from unstimulated T cells (ENCSR977LVI) are overlapping by at least 50% peaks in the stimulated T cell experiment (ENCSR558ZSN).</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="va">unstim</span><span class="op">=</span><span class="st">"data/ENCSR977LVI/ENCFF851MGR.bed.sorted"</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="va">stim</span><span class="op">=</span><span class="st">"data/ENCSR558ZSN/ENCFF002MKC.bed.sorted"</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">bedops</span> <span class="at">-e</span> 50% <span class="va">${unstim}</span> <span class="va">${stim}</span> <span class="op">&gt;</span> <span class="va">${RESULTS}</span>/unstim_peaks_shared_with_stim.bed</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">wc</span> <span class="at">-l</span> <span class="va">${RESULTS}</span>/unstim_peaks_shared_with_stim.bed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Chose one replicate per sample</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="va">unstim</span><span class="op">=</span><span class="st">"data/ENCSR977LVI/ENCFF851MGR.bed.sorted"</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="va">stim</span><span class="op">=</span><span class="st">"data/ENCSR558ZSN/ENCFF002MKC.bed.sorted"</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">bedops</span> <span class="at">-e</span> 50% <span class="va">${unstim}</span> <span class="va">${stim}</span> <span class="op">&gt;</span> <span class="va">${RESULTS}</span>/unstim_peaks_shared_with_stim.bed</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">wc</span> <span class="at">-l</span> <span class="va">${RESULTS}</span>/unstim_peaks_shared_with_stim.bed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>87359 results/03_peaks/unstim_peaks_shared_with_stim.bed</code></pre>
 <p><em>Why didn’t we try <code>bedtools jaccard</code> this time?</em></p>
+<p><em>How many peaks in the stimulated set overlap by 50% the peaks in the unstimulated set?</em></p>
+</section>
+<section id="peak-annotation" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Peak annotation</h1>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install homer</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Instal hg38 version of human genome</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">~/.conda/envs/atac/share/homer/configureHomer.pl</span> <span class="at">-install</span> hg38</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="ex">annotatePeaks.pl</span> <span class="va">$peaks</span> hg38 <span class="at">-size</span> given <span class="at">-CpG</span> <span class="at">-annStats</span> results/03_peaks/<span class="va">$(</span><span class="fu">basename</span> <span class="va">$peaks)</span>.annstats.txt <span class="op">&gt;</span> results/03_peaks/<span class="va">$(</span><span class="fu">basename</span> <span class="va">$peaks)</span>.annotated.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>```r annotated &lt;- data.table::fread(“results/03_peaks/ENCFF002MKC.bed.sorted.annotated.txt”, data.table = FALSE)</p>
 <div class="hidden" aria-hidden="true">
 <span class="glightbox-desc lightbox-desc-1">An example of calculating the intersects between to sets of intervals. From bedops documentation.</span>
 </div>
@@ -666,7 +680,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"loop":false,"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","selector":".lightbox","loop":false,"closeEffect":"zoom","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
