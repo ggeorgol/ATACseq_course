@@ -5,6 +5,10 @@ date: last-modified
 theme: yeti
 number-sections: true
 format:
+  html:
+    code-fold: true
+    toc: true
+    toc-location: left
   pdf:
     code-fold: true
     toc: true
@@ -199,38 +203,13 @@ Now, in order to calculate the normalized enrichment, we need to divide all valu
 For this part we will work in R. 
 
 ```bash
-module load gcc r/4.2.2-2oxptjk
+module load gcc r/4.4.0-ervxjzd
 R
 ```
 
 Then, within R type the following:
 ```r
-# Install and load required packages
-if (!require("data.table", quietly = TRUE)) {
-  install.packages("data.table")
-}
-
-if (!require("BiocManager", quietly = TRUE)) {
-  install.packages("BiocManager")
-}
-
-if (!require("remotes", quietly = TRUE)) {
-  install.packages("remotes")
-}
-
-if (!require("R.utils", quietly = TRUE)) {
-  install.packages("R.utils")
-}
-
-if (!require("GenomicRanges", quietly = TRUE)) {
-BiocManager::install("GenomicRanges")
-}
-
-if (!require("Matrix", quietly = TRUE)) {
-  remotes::install_version("Matrix", 
-  version = "1.6", 
-  repos = "http://cran.us.r-project.org")
-}
+# Load required packages
 
 library(data.table)
 library(GenomicRanges)

@@ -123,12 +123,53 @@ wget -P data/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF218OSF/@@downl
 wget -P data/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF002MKC/@@download/ENCFF002MKC.bed.gz
 wget -P data/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF235RAD/@@download/ENCFF235RAD.bed.gz
 
-# Download ENCSR558ZSN dataset
+# Download ENCSR977LVI dataset
 # BAM files
-wget -P data/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF287DFF/@@download/ENCFF287DFF.bam
-wget -P data/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF218OSF/@@download/ENCFF218OSF.bam
+wget -P data/ENCSR977LVI https://www.encodeproject.org/files/ENCFF984NGC/@@download/ENCFF984NGC.bam
+wget -P data/ENCSR977LVI https://www.encodeproject.org/files/ENCFF978AJO/@@download/ENCFF978AJO.bam
 
 # Peaks
-wget -P data/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF235RAD/@@download/ENCFF235RAD.bed.gz
-wget -P data/ENCSR558ZSN https://www.encodeproject.org/files/ENCFF002MKC/@@download/ENCFF002MKC.bed.gz
+wget -P data/ENCSR977LVI https://www.encodeproject.org/files/ENCFF851MGR/@@download/ENCFF851MGR.bed.gz
+wget -P data/ENCSR977LVI https://www.encodeproject.org/files/ENCFF284IBU/@@download/ENCFF284IBU.bed.gz
+```
+
+Lastly, we will need to setup R for the downstream analyses.
+
+In your terminal, type the following:
+
+```bash
+module load gcc r/4.4.0-ervxjzd
+R
+```
+
+Then, within R type the following to install the necessary packages.
+
+```r
+if (!require("data.table", quietly = TRUE)) {
+  install.packages("data.table")
+}
+
+if (!require("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2")
+}
+
+if (!require("dplyr", quietly = TRUE)) {
+  install.packages("dplyr")
+}
+
+if (!require("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+
+if (!require("R.utils", quietly = TRUE)) {
+  install.packages("R.utils")
+}
+
+if (!require("GenomicRanges", quietly = TRUE)) {
+BiocManager::install("GenomicRanges")
+}
+
+if (!require("Matrix", quietly = TRUE)) {
+  install.packages("Matrix")
+}
 ```
