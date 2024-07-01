@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.555">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Grigorios Georgolopoulos">
+<meta name="dcterms.date" content="2024-07-01">
+
+<title>03 Peak calling and annotation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="03_Peak_calling_files/libs/clipboard/clipboard.min.js"></script>
+<script src="03_Peak_calling_files/libs/quarto-html/quarto.js"></script>
+<script src="03_Peak_calling_files/libs/quarto-html/popper.min.js"></script>
+<script src="03_Peak_calling_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="03_Peak_calling_files/libs/quarto-html/anchor.min.js"></script>
+<link href="03_Peak_calling_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="03_Peak_calling_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="03_Peak_calling_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="03_Peak_calling_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="03_Peak_calling_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="03_Peak_calling_files/libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="03_Peak_calling_files/libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="03_Peak_calling_files/libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#peak-calling" id="toc-peak-calling" class="nav-link active" data-scroll-target="#peak-calling"><span class="header-section-number">1</span> Peak calling</a></li>
+  <li><a href="#operations-with-genomic-intervals" id="toc-operations-with-genomic-intervals" class="nav-link" data-scroll-target="#operations-with-genomic-intervals"><span class="header-section-number">2</span> Operations with genomic intervals</a></li>
+  <li><a href="#calculating-similarity-between-sets-of-intervals" id="toc-calculating-similarity-between-sets-of-intervals" class="nav-link" data-scroll-target="#calculating-similarity-between-sets-of-intervals"><span class="header-section-number">3</span> Calculating similarity between sets of intervals</a></li>
+  <li><a href="#count-how-many-peaks-overlap-between-two-sets" id="toc-count-how-many-peaks-overlap-between-two-sets" class="nav-link" data-scroll-target="#count-how-many-peaks-overlap-between-two-sets"><span class="header-section-number">4</span> Count how many peaks overlap between two sets</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="../03_Peak_calling.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">03 Peak calling and annotation</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Grigorios Georgolopoulos </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 1, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>In this chapter you will learn about what are peak calling, peak annotation, as well as identifying transcription factor binding motifs and performing motif enrichment tests.</p>
+<p><strong>Learning objectives</strong></p>
+<ol type="1">
+<li>Learn how to perform operations with genomic intervals</li>
+<li>Compare peak sets between replicates and between samples</li>
+<li>Annotate peaks</li>
+<li>Map motifs to peaks and perform motif enrichment tests</li>
+</ol>
+<section id="peak-calling" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Peak calling</h1>
+<p>Peak calling is a statistical method which allows us to identify regions enriched with fragments of accessible chromatin. This is a step necessary for all chromatin accessiblity assays such as ATAC-seq, ChIP-seq, DNase I-seq, MNase-seq, FAIRE-seq etc.</p>
+<p>The principle is simple. We break the genome into small windows, and we test whether the number of fragments (or reads) in a window is statistically higher than the number of fragments expected.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/peak_calling.png" class="img-fluid figure-img"></p>
+<figcaption>Peak calling overview from Yan et al., 2020</figcaption>
+</figure>
+</div>
+</section>
+<section id="operations-with-genomic-intervals" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Operations with genomic intervals</h1>
+<p>One of the most common tasks in genomic data analysis is genome arithmetic. How many genomic elements in list A overlap with elements in list B? What is the average ChIP-seq signal over the regions in my list? How far is this element for the nearest TSS? How can I extract intronic regions of a gene given the exons? These are some examples that involve genome arithmetic operations. Genome arithmetic operations occur on a genomic coordinate system which requires at least two values to define an interval; a start coordinate and an end coordinate which is typically denoted like so: <code>1234-2345</code>. If we operate on multiple sequences/scaffolds/chromosomes then we would need the sequence name (or chromosome name) and the notation would look like this <code>chrZ:1234:2345</code>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="assets/bedops_intersect.png" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1" title="An example of calculating the intersects between to sets of intervals. From bedops documentation."><img src="assets/bedops_intersect.png" class="img-fluid figure-img" alt="An example of calculating the intersects between to sets of intervals. From bedops documentation."></a></p>
+<figcaption>An example of calculating the intersects between to sets of intervals. From bedops documentation.</figcaption>
+</figure>
+</div>
+<p>There are a few estblished tools for performing genome arithmetic. The most popular one is <a href="https://bedtools.readthedocs.io/en/latest/">bedtools</a> which is a swiss army-knife able to perform all kinds of genomics analysis tasks with genome arithmetics beeing the most widely used function. Similar to bedTools there is <a href="https://bedops.readthedocs.io/en/latest/index.html">BEDOPS</a> which is preferred for its simpler command format and speed, although latest bedtools implementations seem to perform equally fast. For performance benchmarking information see <a href="https://bedtools.readthedocs.io/en/latest/#performance">here</a>.</p>
+<p>Let’s create a results directory first.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">RESULTS</span><span class="op">=</span><span class="st">"results/03_peaks"</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">${RESULTS}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>First, we need to unzip the compressed bed files</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> GZ <span class="kw">in</span> data/<span class="pp">*</span>/<span class="pp">*</span>bed.gz<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gunzip</span> <span class="va">$GZ</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><em>Before performing any interval operations we need to make sure the files are position sorted</em></p>
+<p>BEDOPS offers a convenient funciton for fast sorting of genomic intervals</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> BED <span class="kw">in</span> data/<span class="pp">*</span>/<span class="pp">*</span>.bed<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Sorting </span><span class="va">${BED}</span><span class="st">..."</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">sort-bed</span> <span class="va">$BED</span> <span class="op">&gt;</span> <span class="va">${BED}</span>.sorted</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now let’s count how many peaks are there per sample:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> BED <span class="kw">in</span> data/<span class="pp">*</span>/<span class="pp">*</span>.bed.sorted<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wc</span> <span class="at">-l</span> <span class="va">${BED}</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>149626 data/ENCSR558ZSN/ENCFF002MKC.bed.sorted
+142405 data/ENCSR558ZSN/ENCFF235RAD.bed.sorted
+112340 data/ENCSR977LVI/ENCFF284IBU.bed.sorted
+111615 data/ENCSR977LVI/ENCFF851MGR.bed.sorted</code></pre>
+<p>According to ENCODE <a href="https://www.encodeproject.org/atac-seq/#standards">ATAC-seq standards</a>, for an acceptable ATAC-seq experiment we expect &gt;100,000 peaks per sample.</p>
+</section>
+<section id="calculating-similarity-between-sets-of-intervals" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Calculating similarity between sets of intervals</h1>
+<p>In this excercise we have 4 sets of peaks called from the two samples with 2 replicates each:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 31%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Sample</th>
+<th style="text-align: left;">Info</th>
+<th style="text-align: left;">File</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ENCSR977LVI</td>
+<td style="text-align: left;">Homo sapiens T-cell female adult (21 years), rep 1</td>
+<td style="text-align: left;">ENCFF002MKC.bed.gz</td>
+</tr>
+<tr class="even">
+<td>ENCSR977LVI</td>
+<td style="text-align: left;">Homo sapiens T-cell female adult (21 years), rep 2</td>
+<td style="text-align: left;">ENCFF235RAD.bed.gz</td>
+</tr>
+<tr class="odd">
+<td>ENCSR558ZSN</td>
+<td style="text-align: left;">Homo sapiens activated T-cell female adult (21 years), rep 1</td>
+<td style="text-align: left;">ENCFF851MGR.bed.gz</td>
+</tr>
+<tr class="even">
+<td>ENCSR558ZSN</td>
+<td style="text-align: left;">Homo sapiens activated T-cell female adult (21 years), rep 2</td>
+<td style="text-align: left;">ENCFF284IBU.bed.gz</td>
+</tr>
+</tbody>
+</table>
+<p>One of the first tasks when dealing with replicates it’s assessing the replicate concordance, i.e.&nbsp;how much the two peak sets overlap. One way to do this is by calculating the Jaccard similarity between the two sets. Jaccard similarity is calculating by dividing the intersect over the union. <code>bedtools</code> has a very convenient function to calculate this. For details on the <code>bedtools jaccard</code> function see <a href="https://bedtools.readthedocs.io/en/latest/content/tools/jaccard.html">here</a>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="va">samples</span><span class="op">=</span><span class="va">(</span><span class="st">"ENCSR977LVI"</span> <span class="st">"ENCSR558ZSN"</span><span class="va">)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> sample <span class="kw">in</span> <span class="va">${samples</span><span class="op">[@]</span><span class="va">}</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="va">files</span><span class="op">=</span><span class="va">(</span><span class="kw">`</span><span class="fu">ls</span> data/<span class="va">${sample}</span>/<span class="pp">*</span>.bed.sorted<span class="kw">`</span><span class="va">)</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="va">fileA</span><span class="op">=</span><span class="va">${files</span><span class="op">[</span><span class="dv">0</span><span class="op">]</span><span class="va">}</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="va">fileB</span><span class="op">=</span><span class="va">${files</span><span class="op">[</span><span class="dv">1</span><span class="op">]</span><span class="va">}</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Jaccard similarity report between replicate 1 and replicate 2 for sample </span><span class="va">${sample}</span><span class="st">:"</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">bedtools</span> jaccard <span class="at">-a</span> <span class="va">${fileA}</span> <span class="at">-b</span> <span class="va">${fileB}</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="at">-e</span> <span class="st">"\n"</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>Jaccard similarity report between replicate 1 and replicate 2 for sample ENCSR977LVI:
+intersection    union   jaccard n_intersections
+33571756        41880240        0.801613        54880
+
+
+Jaccard similarity report between replicate 1 and replicate 2 for sample ENCSR558ZSN:
+intersection    union   jaccard n_intersections
+44143512        57000632        0.774439        76484</code></pre>
+</section>
+<section id="count-how-many-peaks-overlap-between-two-sets" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Count how many peaks overlap between two sets</h1>
+<p>A common task is to test how many peaks are shared between two samples. This will answer questions such as how similar is the accessible chromatin landscape between two treatments/cell types/timepoints etc.</p>
+<p>In this excercise we will evaluate how many peaks discovered from unstimulated T cells (ENCSR977LVI) are overlapping by at least 50% peaks in the stimulated T cell experiment (ENCSR558ZSN).</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="va">unstim</span><span class="op">=</span><span class="st">"data/ENCSR977LVI/ENCFF851MGR.bed.sorted"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="va">stim</span><span class="op">=</span><span class="st">"data/ENCSR558ZSN/ENCFF002MKC.bed.sorted"</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">bedops</span> <span class="at">-e</span> 50% <span class="va">${unstim}</span> <span class="va">${stim}</span> <span class="op">&gt;</span> <span class="va">${RESULTS}</span>/unstim_peaks_shared_with_stim.bed</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">wc</span> <span class="at">-l</span> <span class="va">${RESULTS}</span>/unstim_peaks_shared_with_stim.bed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>87359 results/03_peaks/unstim_peaks_shared_with_stim.bed</code></pre>
+<p><em>Why didn’t we try <code>bedtools jaccard</code> this time?</em></p>
+<div class="hidden" aria-hidden="true">
+<span class="glightbox-desc lightbox-desc-1">An example of calculating the intersects between to sets of intervals. From bedops documentation.</span>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"loop":false,"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom"});
+window.onload = () => {
+  lightboxQuarto.on('slide_before_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    const href = trigger.getAttribute('href');
+    if (href !== null) {
+      const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+      if (imgEl !== null) {
+        const srcAttr = imgEl.getAttribute("src");
+        if (srcAttr && srcAttr.startsWith("data:")) {
+          slideConfig.href = srcAttr;
+        }
+      }
+    } 
+  });
+
+  lightboxQuarto.on('slide_after_load', (data) => {
+    const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+    if (window.Quarto?.typesetMath) {
+      window.Quarto.typesetMath(slideNode);
+    }
+  });
+
+};
+          </script>
+
+
+
+
+</body></html>
